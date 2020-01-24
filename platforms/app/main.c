@@ -5,6 +5,9 @@
 //  All rights reserved.
 //
 
+// without this, get errors about clock_gettime() being undefined
+#define _POSIX_C_SOURCE 199309L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -54,7 +57,17 @@ M3Result repl_load  (IM3Runtime runtime, const char* fn)
     fclose (f);
 
     IM3Module module;
+    struct timespec requestStart, requestEnd;
+
+    clock_gettime(CLOCK_REALTIME, &requestStart);
     result = m3_ParseModule (runtime->environment, &module, wasm, fsize);
+    clock_gettime(CLOCK_REALTIME, &requestEnd);
+    double accum = ( requestEnd.tv_sec - requestStart.tv_sec )
+      + ( requestEnd.tv_nsec - requestStart.tv_nsec )
+      / 1E9;
+    printf( "Instantiation time: %lf\n", accum );
+
+
     if (result) return result;
 
     result = m3_LoadModule (runtime, module);
@@ -125,7 +138,19 @@ M3Result repl_call  (IM3Runtime runtime, const char* name, int argc, const char*
         }
     }
 
+    struct timespec requestStart, requestEnd;
+
+    clock_gettime(CLOCK_REALTIME, &requestStart);
+
     result = m3_CallWithArgs (func, argc, argv);
+
+    clock_gettime(CLOCK_REALTIME, &requestEnd);
+    double accum = ( requestEnd.tv_sec - requestStart.tv_sec )
+      + ( requestEnd.tv_nsec - requestStart.tv_nsec )
+      / 1E9;
+    printf( "execution time: %lf\n", accum );
+
+
     if (result) return result;
 
     return result;
