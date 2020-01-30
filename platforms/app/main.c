@@ -65,7 +65,7 @@ M3Result repl_load  (IM3Runtime runtime, const char* fn)
     double accum = ( requestEnd.tv_sec - requestStart.tv_sec )
       + ( requestEnd.tv_nsec - requestStart.tv_nsec )
       / 1E9;
-    printf( "Instantiation time: %lf\n", accum );
+    printf( "Instantiation time: %lfs\n", accum );
 
 
     if (result) return result;
@@ -148,7 +148,7 @@ M3Result repl_call  (IM3Runtime runtime, const char* name, int argc, const char*
     double accum = ( requestEnd.tv_sec - requestStart.tv_sec )
       + ( requestEnd.tv_nsec - requestStart.tv_nsec )
       / 1E9;
-    printf( "execution time: %lf\n", accum );
+    printf( "execution time: %lfs\n", accum );
 
 
     if (result) return result;
